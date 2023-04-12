@@ -4,7 +4,7 @@ package waveletmatrix
 // Sample
 //**********************************************************************
 /*
-package main
+
 
 import (
 	"fmt"
@@ -23,90 +23,84 @@ func main() {
 // BitVector
 //**********************************************************************
 type BitVector struct {
-	n    int    //配列の長さ
-	data []byte //bit情報
-	sum0 []int  //0bitの個数の累積和
-	sum1 []int  //1bitの個数の累積和
+	n    int      // 配列の長さ
+	data []uint64 // bit情報
+	sum  []uint32 // 0bitと1bitの個数の累積和
 }
 
 func NewBitVector(l []int, bit int) *BitVector {
 	n := len(l)
 	ret := &BitVector{}
 	ret.n = n
-	ret.data = make([]byte, n)
-	ret.sum0 = make([]int, n)
-	ret.sum1 = make([]int, n)
+	ret.data = make([]uint64, (n+63)/64) // ビットマップとしてのuint64配列
+	ret.sum = make([]uint32, n)
 	f := 1 << (bit - 1)
-	s0 := 0
-	s1 := 0
+	s := uint32(0)
 	for i := 0; i < n; i++ {
 		if f&l[i] == f {
-			ret.data[i] = 1
-			s1++
-		} else {
-			s0++
+			ret.data[i/64] |= 1 << (i % 64) // 1を格納するビットをセット
+			s++
 		}
-		ret.sum0[i] = s0
-		ret.sum1[i] = s1
+		ret.sum[i] = s
 	}
 	return ret
 }
 
-// 1の個数の合計を返す
 func (b *BitVector) OneNum() int {
-	return b.sum1[b.n-1]
+	if len(b.data) == 0 {
+		return 0
+	}
+	return int(b.sum[b.n-1])
 }
 
-// 0の個数の合計を返す
 func (b *BitVector) ZeroNum() int {
-	return b.sum0[b.n-1]
+	if len(b.data) == 0 {
+		return 0
+	}
+	return b.n - b.OneNum()
 }
 
-// [0...pos]までのbit(0 or 1)の個数を返す
-// posは0-indexed
 func (b *BitVector) Rank(pos, bit int) int {
 	if bit == 0 {
-		return b.sum0[pos]
+		return pos + 1 - int(b.sum[pos])
 	} else {
-		return b.sum1[pos]
+		return int(b.sum[pos])
 	}
 }
-
-// bit(0 or 1)がrank回出現する位置を返す
-func (b *BitVector) Select(rank, bit int) int {
-	f := func(array []int, target int) int {
-		low, high, mid := 0, len(array)-1, 0
-		for low <= high {
-			mid = (low + high) / 2
-			if array[mid] >= target {
-				high = mid - 1
-			} else {
-				low = mid + 1
-			}
-		}
-		return low
+func (b *BitVector) GetBit(pos int) int {
+	if (b.data[pos/64]>>(pos%64))&1 == 1 {
+		return 1
 	}
-	ret := -1
+	return 0
+}
+func (b *BitVector) Select(rank, bit int) int {
+	low, high, mid := 0, len(b.sum)-1, 0
+	for low <= high {
+		mid = (low + high) / 2
+		if b.Rank(mid, bit) >= rank {
+			high = mid - 1
+		} else {
+			low = mid + 1
+		}
+	}
+	ret := low
 	if bit == 0 {
 		if 0 <= rank && rank <= b.ZeroNum() {
-			ret = f(b.sum0, rank)
+			return ret
 		}
 	} else {
 		if 0 <= rank && rank <= b.OneNum() {
-			ret = f(b.sum1, rank)
+			return ret
 		}
 	}
-	return ret
+	return -1
 }
 
 //**********************************************************************
 // WaveletMatrix
 //**********************************************************************
-//参考にしたもの：https://miti-7.hatenablog.com/entry/2018/04/28/152259
-
 type WaveletMatrix struct {
 	wmd []*BitVector
-	fi  map[int]int // 入力した数値のインデックス
 	sp  map[int]int // 入力したスライスの中に含まれる数値が左からみて初めて出現する位置(0-indexed)
 	ep  []int       // Selectでの数値存在チェック用
 	n   int         // 入力したスライスの長さ
@@ -131,14 +125,9 @@ func NewWaveletMatrix(a []int) *WaveletMatrix {
 		t *= 2
 		ret.bit++
 	}
-
 	ret.wmd = make([]*BitVector, ret.bit)
 	ret.n = len(a)
 	ret.sp = make(map[int]int)
-	ret.fi = make(map[int]int)
-	for i := len(a) - 1; i >= 0; i-- {
-		ret.fi[a[i]] = i
-	}
 	w1 := make([]int, ret.n)
 	w2 := make([]int, ret.n)
 	copy(w1, a)
@@ -147,9 +136,8 @@ func NewWaveletMatrix(a []int) *WaveletMatrix {
 	for i := ret.bit; i > 0; i-- {
 		ret.wmd[idx] = NewBitVector(w1, i)
 		p0, p1 = 0, ret.wmd[idx].ZeroNum()
-
 		for j := 0; j < ret.n; j++ {
-			if ret.wmd[idx].data[j] == 0 {
+			if ret.wmd[idx].GetBit(j) == 0 {
 				w2[p0] = w1[j]
 				p0++
 			} else {
@@ -174,7 +162,7 @@ func NewWaveletMatrix(a []int) *WaveletMatrix {
 func (w *WaveletMatrix) Access(idx int) int {
 	ret := 0
 	for i := 0; i < w.bit; i++ {
-		b := w.wmd[i].data[idx]
+		b := w.wmd[i].GetBit(idx) // 修正: data フィールドへの直接アクセスを GetBit に変更
 		if b == 1 {
 			ret += 1 << (w.bit - i - 1)
 		}
@@ -195,7 +183,7 @@ func (w *WaveletMatrix) Select(num, count int) (int, bool) {
 		return 0, false
 	}
 	pos := w.sp[num] + count - 1
-	if w.ep[pos] != num {
+	if len(w.ep) <= pos || w.ep[pos] != num {
 		return 0, false
 	}
 	for i := 0; i < w.bit; i++ {
@@ -213,14 +201,13 @@ func (w *WaveletMatrix) Select(num, count int) (int, bool) {
 // 数値nが[0,idx]までに出現する回数を返す
 // 存在しない場合は0
 func (w *WaveletMatrix) Rank(n, idx int) int {
-	pos, ok := w.fi[n]
-	if ok == false || pos > idx {
+	_, ok := w.sp[n]
+	if ok == false {
 		return 0
 	}
 	for i := 0; i < w.bit; i++ {
 		b := (n >> (w.bit - i - 1)) & 1
 		if b == 0 {
-			//idx = max(0, w.wmd[i].Rank(idx, 0)-1)
 			idx = w.wmd[i].Rank(idx, 0) - 1
 		} else {
 			idx = w.wmd[i].Rank(idx, 1) + w.wmd[i].ZeroNum() - 1
@@ -246,7 +233,7 @@ func (w *WaveletMatrix) Quantile(l, r, n int) int {
 		b0 = w.wmd[i].Rank(r, 0) - a0
 		b1 = w.wmd[i].Rank(r, 1) - a1
 
-		if w.wmd[i].data[l] == 0 {
+		if w.wmd[i].GetBit(l) == 0 {
 			a0--
 			b0++
 		} else {
@@ -270,9 +257,17 @@ func (w *WaveletMatrix) Quantile(l, r, n int) int {
 	}
 	return ret
 }
-
-//[l,r]の中でn番目に大きい値を返す
 func (w *WaveletMatrix) Quantile2(l, r, n int) int {
 	k := r - l - n + 2 //n番目に大きいをk番目に小さいに変換
 	return w.Quantile(l, r, k)
+}
+
+//[l,r]の中でのxの出現回数を返す
+func (w *WaveletMatrix) RangeFreq(l, r, x int) int {
+	t1 := w.Rank(x, r)
+	t2 := 0
+	if l != 0 {
+		t2 = w.Rank(x, l-1)
+	}
+	return t1 - t2
 }

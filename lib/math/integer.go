@@ -87,13 +87,13 @@ func exgcd(a, b int) (int, int) {
 	for b != 0 {
 		t := a / b
 		if m1 >= m2 {
-			x1 -= (x2 * t)
-			y1 -= (y2 * t)
-			m1 -= (m2 * t)
+			x1 -= x2 * t
+			y1 -= y2 * t
+			m1 -= m2 * t
 		} else {
-			x2 -= (x1 * t)
-			y2 -= (y1 * t)
-			m2 -= (m1 * t)
+			x2 -= x1 * t
+			y2 -= y1 * t
+			m2 -= m1 * t
 		}
 		a, b = b, a%b
 		if m1 == 1 {
@@ -159,7 +159,7 @@ func CombinationMod(a, b, mod int) int {
 	for i := a - b + 1; i <= a; i++ {
 		t1 = (i * t1) % mod
 	}
-	return ((t1 * gyaku) % mod)
+	return (t1 * gyaku) % mod
 }
 
 // べき乗の剰余
@@ -185,15 +185,15 @@ func pow(a, b int) int {
 	t := 1
 	for q >= 2 {
 		if q%2 == 0 {
-			p = (p * p)
+			p = p * p
 			q = q / 2
 		} else {
-			t = (t * p)
-			p = (p * p)
+			t = t * p
+			p = p * p
 			q = (q - 1) / 2
 		}
 	}
-	return (t * p)
+	return t * p
 }
 
 // 正方行列の掛け算
