@@ -1,6 +1,7 @@
 # golang-competitive-programming
- 競プロライブラリ
 
+競技プログラミング用のライブラリです。
+説明やソースのコメントはChatGPTで生成しました。
 
 # Graph Algorithms
 
