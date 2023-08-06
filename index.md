@@ -20,5 +20,8 @@ data:
     - icon: ':heavy_check_mark:'
       path: lib/waveletmatrix/range_kth_smallest.test.go
       title: lib/waveletmatrix/range_kth_smallest.test.go
+    - icon: ':heavy_check_mark:'
+      path: lib/waveletmatrix/static_range_frequency.test.go
+      title: lib/waveletmatrix/static_range_frequency.test.go
 layout: toppage
 ---

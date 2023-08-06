@@ -5,6 +5,9 @@ data:
     path: lib/waveletmatrix/range_kth_smallest.test.go
     title: lib/waveletmatrix/range_kth_smallest.test.go
   - icon: ':heavy_check_mark:'
+    path: lib/waveletmatrix/static_range_frequency.test.go
+    title: lib/waveletmatrix/static_range_frequency.test.go
+  - icon: ':heavy_check_mark:'
     path: lib/waveletmatrix/waveletmatrix.go
     title: lib/waveletmatrix/waveletmatrix.go
   - icon: ':heavy_check_mark:'
@@ -21,6 +24,9 @@ data:
   - icon: ':heavy_check_mark:'
     path: lib/waveletmatrix/range_kth_smallest.test.go
     title: lib/waveletmatrix/range_kth_smallest.test.go
+  - icon: ':heavy_check_mark:'
+    path: lib/waveletmatrix/static_range_frequency.test.go
+    title: lib/waveletmatrix/static_range_frequency.test.go
   _isVerificationFailed: false
   _pathExtension: go
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -776,15 +782,17 @@ data:
   - lib/waveletmatrix/waveletmatrix.go
   - lib/waveletmatrix/waveletmatrix_test.go
   - lib/waveletmatrix/range_kth_smallest.test.go
+  - lib/waveletmatrix/static_range_frequency.test.go
   isVerificationFile: false
   path: lib/template/main.go
   requiredBy:
   - lib/waveletmatrix/waveletmatrix.go
   - lib/waveletmatrix/waveletmatrix_test.go
-  timestamp: '2023-08-06 21:18:43+09:00'
+  timestamp: '2023-08-06 22:33:19+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - lib/waveletmatrix/range_kth_smallest.test.go
+  - lib/waveletmatrix/static_range_frequency.test.go
 documentation_of: lib/template/main.go
 layout: document
 redirect_from:
