@@ -10,9 +10,6 @@ data:
   - icon: ':heavy_check_mark:'
     path: lib/waveletmatrix/waveletmatrix.go
     title: lib/waveletmatrix/waveletmatrix.go
-  - icon: ':heavy_check_mark:'
-    path: range_kth_smallest.test.go
-    title: range_kth_smallest.test.go
   _extendedRequiredBy:
   - icon: ':heavy_check_mark:'
     path: lib/template/main.go
@@ -24,9 +21,6 @@ data:
   - icon: ':heavy_check_mark:'
     path: lib/waveletmatrix/range_kth_smallest.test.go
     title: lib/waveletmatrix/range_kth_smallest.test.go
-  - icon: ':heavy_check_mark:'
-    path: range_kth_smallest.test.go
-    title: range_kth_smallest.test.go
   _isVerificationFailed: false
   _pathExtension: go
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -94,7 +88,6 @@ data:
     \ %d\", test.l, test.r, test.low, test.high, result, test.want)\n\t\t}\n\t}\n\
     }\n"
   dependsOn:
-  - range_kth_smallest.test.go
   - lib/template/main.go
   - lib/waveletmatrix/waveletmatrix.go
   - lib/waveletmatrix/range_kth_smallest.test.go
@@ -103,10 +96,9 @@ data:
   requiredBy:
   - lib/template/main.go
   - lib/waveletmatrix/waveletmatrix.go
-  timestamp: '2023-08-06 22:01:08+09:00'
+  timestamp: '2023-08-06 21:18:43+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - range_kth_smallest.test.go
   - lib/waveletmatrix/range_kth_smallest.test.go
 documentation_of: lib/waveletmatrix/waveletmatrix_test.go
 layout: document
