@@ -5,8 +5,8 @@ data:
     path: lib/template/main.go
     title: lib/template/main.go
   - icon: ':heavy_check_mark:'
-    path: lib/waveletmatrix/static_range_frequency.test.go
-    title: lib/waveletmatrix/static_range_frequency.test.go
+    path: lib/waveletmatrix/examples/static_range_frequency.test.go
+    title: lib/waveletmatrix/examples/static_range_frequency.test.go
   - icon: ':heavy_check_mark:'
     path: lib/waveletmatrix/waveletmatrix.go
     title: lib/waveletmatrix/waveletmatrix.go
@@ -25,8 +25,8 @@ data:
     title: lib/waveletmatrix/waveletmatrix_test.go
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
-    path: lib/waveletmatrix/static_range_frequency.test.go
-    title: lib/waveletmatrix/static_range_frequency.test.go
+    path: lib/waveletmatrix/examples/static_range_frequency.test.go
+    title: lib/waveletmatrix/examples/static_range_frequency.test.go
   _isVerificationFailed: false
   _pathExtension: go
   _verificationStatusIcon: ':heavy_check_mark:'
@@ -38,7 +38,7 @@ data:
     \         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\
     \  File \"/opt/hostedtoolcache/Python/3.11.4/x64/lib/python3.11/site-packages/onlinejudge_verify/languages/user_defined.py\"\
     , line 68, in bundle\n    raise RuntimeError('bundler is not specified: {}'.format(str(path)))\n\
-    RuntimeError: bundler is not specified: lib/waveletmatrix/range_kth_smallest.test.go\n"
+    RuntimeError: bundler is not specified: lib/waveletmatrix/examples/range_kth_smallest.test.go\n"
   code: "package main\n\n// verification-helper: PROBLEM https://judge.yosupo.jp/problem/range_kth_smallest\n\
     \nimport (\n\t\"bufio\"\n\t\"container/list\"\n\t\"fmt\"\n\t\"math\"\n\t\"math/big\"\
     \n\t\"math/bits\"\n\t\"os\"\n\t\"reflect\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\
@@ -887,21 +887,21 @@ data:
   - lib/template/main.go
   - lib/waveletmatrix/waveletmatrix.go
   - lib/waveletmatrix/waveletmatrix_test.go
-  - lib/waveletmatrix/static_range_frequency.test.go
+  - lib/waveletmatrix/examples/static_range_frequency.test.go
   isVerificationFile: true
-  path: lib/waveletmatrix/range_kth_smallest.test.go
+  path: lib/waveletmatrix/examples/range_kth_smallest.test.go
   requiredBy:
   - lib/template/main.go
   - lib/waveletmatrix/waveletmatrix.go
   - lib/waveletmatrix/waveletmatrix_test.go
-  timestamp: '2023-08-06 22:33:19+09:00'
+  timestamp: '2023-08-06 22:43:10+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith:
-  - lib/waveletmatrix/static_range_frequency.test.go
-documentation_of: lib/waveletmatrix/range_kth_smallest.test.go
+  - lib/waveletmatrix/examples/static_range_frequency.test.go
+documentation_of: lib/waveletmatrix/examples/range_kth_smallest.test.go
 layout: document
 redirect_from:
-- /verify/lib/waveletmatrix/range_kth_smallest.test.go
-- /verify/lib/waveletmatrix/range_kth_smallest.test.go.html
-title: lib/waveletmatrix/range_kth_smallest.test.go
+- /verify/lib/waveletmatrix/examples/range_kth_smallest.test.go
+- /verify/lib/waveletmatrix/examples/range_kth_smallest.test.go.html
+title: lib/waveletmatrix/examples/range_kth_smallest.test.go
 ---
