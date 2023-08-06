@@ -29,7 +29,7 @@ var rdr *bufio.Scanner
 var wtr *bufio.Writer
 var p10 []int
 
-// Verify　test
+// Verify　test 
 func solve() {
 	n, q := ri2()
 	a := ris(n)
