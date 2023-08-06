@@ -1,6 +1,9 @@
 package main
 
-import "sort"
+import (
+	"math"
+	"sort"
+)
 
 type BitVector struct {
 	n    int      // 配列の長さ
@@ -255,8 +258,8 @@ func (w *WaveletMatrix) Freq(l, r, x int) int {
 
 // 指定したindexの値が[l,r]の中で何番目かを返す
 func (w *WaveletMatrix) ConvertIndexToKth(l, r, index int, isPriorySmall bool) int {
-	if isOutRange(index, l, r) {
-		return -INF
+	if index < l || index > r {
+		return -math.MaxInt32
 	}
 	k := w.Access(index)
 	ret := sort.Search(r-l+1, func(i int) bool {
