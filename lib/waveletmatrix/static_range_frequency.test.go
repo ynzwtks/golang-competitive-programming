@@ -1,6 +1,6 @@
 package main
 
-// verification-helper: PROBLEM https://judge.yosupo.jp/problem/range_kth_smallest
+// verification-helper: PROBLEM https://judge.yosupo.jp/problem/static_range_frequency
 
 import (
 	"bufio"
@@ -29,14 +29,13 @@ var rdr *bufio.Scanner
 var wtr *bufio.Writer
 var p10 []int
 
-// Verify　test 
 func solve() {
 	n, q := ri2()
 	a := ris(n)
 	wm := NewWaveletMatrix(a)
 	for i := 0; i < q; i++ {
-		l, r, k := ri3()
-		out(wm.KthSmall(l, r-1, k+1))
+		l, r, x := ri3()
+		out(wm.RangeFreq(l, r-1, x, x))
 	}
 }
 
