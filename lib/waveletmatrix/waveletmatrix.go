@@ -1,27 +1,7 @@
-package waveletmatrix
+package main
 
-//**********************************************************************
-// Sample
-//**********************************************************************
-/*
+import "sort"
 
-
-import (
-	"fmt"
-)
-
-func main() {
-	a := []int{1, 2, 4, 8, 8, 4, 2, 1}
-	wm := NewWaveletMatrix(a)
-	fmt.Println(wm.Quantile2(0, 3, 2)) //4
-	for i := 0; i < wm.bit; i++ {
-		fmt.Println(wm.wmd[i])
-	}
-}
-*/
-//**********************************************************************
-// BitVector
-//**********************************************************************
 type BitVector struct {
 	n    int      // 配列の長さ
 	data []uint64 // bit情報
@@ -61,6 +41,9 @@ func (b *BitVector) ZeroNum() int {
 }
 
 func (b *BitVector) Rank(pos, bit int) int {
+	if pos == -1 {
+		return 0
+	}
 	if bit == 0 {
 		return pos + 1 - int(b.sum[pos])
 	} else {
@@ -96,32 +79,30 @@ func (b *BitVector) Select(rank, bit int) int {
 	return -1
 }
 
-//**********************************************************************
-// WaveletMatrix
-//**********************************************************************
 type WaveletMatrix struct {
-	wmd []*BitVector
-	sp  map[int]int // 入力したスライスの中に含まれる数値が左からみて初めて出現する位置(0-indexed)
-	ep  []int       // Selectでの数値存在チェック用
-	n   int         // 入力したスライスの長さ
-	bit int         // 入力したスライスに含まれる最大値のbit長
+	wmd        []*BitVector
+	sp         map[int]int // 入力したスライスの中に含まれる数値が左からみて初めて出現する位置(0-indexed)
+	ep         []int       // Selectでの数値存在チェック用
+	n          int         // 入力したスライスの長さ
+	bit        int         // 入力したスライスに含まれる最大値のbit長
+	maxElement int
 }
 
 func NewWaveletMatrix(a []int) *WaveletMatrix {
 	ret := &WaveletMatrix{}
-	f := func(x ...int) int {
-		ret := 0
+	sliceMax := func(x ...int) int {
+		t := 0
 		for i := 0; i < len(x); i++ {
-			if ret < x[i] {
-				ret = x[i]
+			if t < x[i] {
+				t = x[i]
 			}
 		}
-		return ret
+		return t
 	}
-	ma := f(a...)
+	ret.maxElement = sliceMax(a...)
 	t := 1
 	ret.bit = 1
-	for t < ma {
+	for t < ret.maxElement {
 		t *= 2
 		ret.bit++
 	}
@@ -216,14 +197,14 @@ func (w *WaveletMatrix) Rank(n, idx int) int {
 	return idx - w.sp[n] + 1
 }
 
-//[l,r]の中でn番目に小さい値を返す
-func (w *WaveletMatrix) Quantile(l, r, n int) int {
+// [l,r]の中でn番目に小さい値を返す
+func (w *WaveletMatrix) KthSmall(l, r, n int) int {
 	if l < 0 || r >= w.n || l > r || r-l+1 < n {
 		return -1
 	}
 	a0, a1, b0, b1 := 0, 0, 0, 0
 	//a0:lより前の0の個数 a1:lより前の1の個数
-	//b0:[l,r]内の0の個数 a1:[l,r]内の1の個数
+	//b0:[l,r]内の0の個数 ab:[l,r]内の1の個数
 	pos := n
 	ret := 0
 	bit := 0
@@ -257,17 +238,68 @@ func (w *WaveletMatrix) Quantile(l, r, n int) int {
 	}
 	return ret
 }
-func (w *WaveletMatrix) Quantile2(l, r, n int) int {
+func (w *WaveletMatrix) KthLarge(l, r, n int) int {
 	k := r - l - n + 2 //n番目に大きいをk番目に小さいに変換
-	return w.Quantile(l, r, k)
+	return w.KthSmall(l, r, k)
 }
 
-//[l,r]の中でのxの出現回数を返す
-func (w *WaveletMatrix) RangeFreq(l, r, x int) int {
+// [l,r]の中でのxの出現回数を返す
+func (w *WaveletMatrix) Freq(l, r, x int) int {
 	t1 := w.Rank(x, r)
 	t2 := 0
 	if l != 0 {
 		t2 = w.Rank(x, l-1)
 	}
 	return t1 - t2
+}
+
+// 指定したindexの値が[l,r]の中で何番目かを返す
+func (w *WaveletMatrix) ConvertIndexToKth(l, r, index int, isPriorySmall bool) int {
+	if isOutRange(index, l, r) {
+		return -INF
+	}
+	k := w.Access(index)
+	ret := sort.Search(r-l+1, func(i int) bool {
+		if isPriorySmall == true {
+			val := w.KthSmall(l, r, l+1)
+			return k <= val
+		} else {
+			val := w.KthSmall(l, r, l+i)
+			return k >= val
+		}
+	})
+	return ret + 1
+}
+
+// [l,r]にてlow以上、high以下の要素数をカウントする
+func (w *WaveletMatrix) RangeFreq(l, r, low, high int) int {
+	if low == high {
+		return w.Freq(l, r, low)
+	}
+	return w.countLt(l, r, high+1) - w.countLt(l, r, low)
+}
+
+// [l,r]でv未満の要素の数をカウントする
+func (w *WaveletMatrix) countLt(l, r, v int) int {
+	if v > w.maxElement {
+		return r - l
+	}
+	ret := 0
+	for i := 0; i < w.bit; i++ {
+		b := (v >> (w.bit - i - 1)) & 1
+		l0 := w.wmd[i].Rank(l, 0)
+		r0 := w.wmd[i].Rank(r, 0)
+		if b == 1 {
+			ret += r0
+			if l > 0 {
+				ret -= w.wmd[i].Rank(l-1, 0)
+			}
+			l += w.wmd[i].ZeroNum() - l0
+			r += w.wmd[i].ZeroNum() - r0
+		} else {
+			l = l0 - 1
+			r = r0 - 1
+		}
+	}
+	return ret
 }

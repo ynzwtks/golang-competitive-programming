@@ -1,4 +1,4 @@
-package waveletmatrix
+package main
 
 import (
 	"math/rand"
@@ -78,25 +78,25 @@ func TestRank(t *testing.T) {
 	}
 }
 
-func TestQuantile(t *testing.T) {
+func TestWaveletMatrix_KthSmall(t *testing.T) {
 	data := []int{1, 2, 2, 3, 3, 3}
 	wm := NewWaveletMatrix(data)
 
 	quantiles := []int{1, 2, 2, 3, 3, 3}
 	for i, q := range quantiles {
-		if wm.Quantile(0, 5, i+1) != q {
-			t.Errorf("Quantile(0, 5, %d) returned %d, expected %d", i+1, wm.Quantile(0, 5, i+1), q)
+		if wm.KthSmall(0, 5, i+1) != q {
+			t.Errorf("Quantile(0, 5, %d) returned %d, expected %d", i+1, wm.KthSmall(0, 5, i+1), q)
 		}
 	}
 }
-func TestQuantile2(t *testing.T) {
+func TestWaveletMatrix_KthLarge(t *testing.T) {
 	data := []int{1, 2, 2, 3, 3, 3}
 	wm := NewWaveletMatrix(data)
 
 	quantiles2 := []int{3, 3, 3, 2, 2, 1}
 	for i, q := range quantiles2 {
-		if wm.Quantile2(0, 5, i+1) != q {
-			t.Errorf("Quantile2(0, 5, %d) returned %d, expected %d", i+1, wm.Quantile2(0, 5, i+1), q)
+		if wm.KthLarge(0, 5, i+1) != q {
+			t.Errorf("Quantile2(0, 5, %d) returned %d, expected %d", i+1, wm.KthLarge(0, 5, i+1), q)
 		}
 	}
 }
@@ -113,18 +113,18 @@ func TestWaveletMatrixRandomData(t *testing.T) {
 	sort.Ints(sortedData)
 
 	for i := 0; i < 1000; i++ {
-		q := wm.Quantile(0, 999, i+1)
+		q := wm.KthSmall(0, 999, i+1)
 		if q != sortedData[i] {
 			t.Errorf("Quantile(0, 999, %d) returned %d, expected %d", i+1, q, sortedData[i])
 		}
 
-		q2 := wm.Quantile2(0, 999, i+1)
+		q2 := wm.KthLarge(0, 999, i+1)
 		if q2 != sortedData[999-i] {
 			t.Errorf("Quantile2(0, 999, %d) returned %d, expected %d", i+1, q2, sortedData[999-i])
 		}
 	}
 }
-func TestRangeFreq(t *testing.T) {
+func TestFreq(t *testing.T) {
 	data := []int{0, 1, 2, 3, 2, 2, 1}
 	wm := NewWaveletMatrix(data)
 
@@ -143,9 +143,34 @@ func TestRangeFreq(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result := wm.RangeFreq(test.l, test.r, test.x)
+		result := wm.Freq(test.l, test.r, test.x)
 		if result != test.want {
-			t.Errorf("RangeFreq(%d, %d, %d) = %d; want %d", test.l, test.r, test.x, result, test.want)
+			t.Errorf("Freq(%d, %d, %d) = %d; want %d", test.l, test.r, test.x, result, test.want)
+		}
+	}
+}
+func TestRangeFreq(t *testing.T) {
+	data := []int{0, 1, 2, 3, 2, 2, 1}
+	wm := NewWaveletMatrix(data)
+
+	tests := []struct {
+		l, r, low, high int
+		want            int
+	}{
+		{l: 0, r: 6, low: 2, high: 2, want: 3},
+		{l: 1, r: 6, low: 2, high: 2, want: 3},
+		{l: 2, r: 6, low: 2, high: 2, want: 3},
+		{l: 3, r: 6, low: 2, high: 2, want: 2},
+		{l: 0, r: 6, low: 0, high: 0, want: 1},
+		{l: 0, r: 6, low: 1, high: 1, want: 2},
+		{l: 0, r: 6, low: 3, high: 3, want: 1},
+		{l: 4, r: 4, low: 5, high: 5, want: 0},
+	}
+
+	for _, test := range tests {
+		result := wm.RangeFreq(test.l, test.r, test.low, test.high)
+		if result != test.want {
+			t.Errorf("RangeFreq(%d, %d, %d, %d) = %d; want %d", test.l, test.r, test.low, test.high, result, test.want)
 		}
 	}
 }
