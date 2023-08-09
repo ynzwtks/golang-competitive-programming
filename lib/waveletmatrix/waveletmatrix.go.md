@@ -118,28 +118,28 @@ data:
     \t\t\tr = a1 + b1 + w.wmd[i].ZeroNum() - 1\n\t\t}\n\t}\n\treturn ret\n}\nfunc\
     \ (w *WaveletMatrix) KthLarge(l, r, n int) int {\n\tk := r - l - n + 2 //n\u756A\
     \u76EE\u306B\u5927\u304D\u3044\u3092k\u756A\u76EE\u306B\u5C0F\u3055\u3044\u306B\
-    \u5909\u63DB\n\treturn w.KthSmall(l, r, k)\n}\n\n// [l,r]\u306E\u4E2D\u3067\u306E\
-    x\u306E\u51FA\u73FE\u56DE\u6570\u3092\u8FD4\u3059\nfunc (w *WaveletMatrix) Freq(l,\
-    \ r, x int) int {\n\tt1 := w.Rank(x, r)\n\tt2 := 0\n\tif l != 0 {\n\t\tt2 = w.Rank(x,\
-    \ l-1)\n\t}\n\treturn t1 - t2\n}\n\n// \u6307\u5B9A\u3057\u305Findex\u306E\u5024\
-    \u304C[l,r]\u306E\u4E2D\u3067\u4F55\u756A\u76EE\u304B\u3092\u8FD4\u3059\nfunc\
-    \ (w *WaveletMatrix) ConvertIndexToKth(l, r, index int, isPriorySmall bool) int\
-    \ {\n\tif index < l || index > r {\n\t\treturn -math.MaxInt32\n\t}\n\tk := w.Access(index)\n\
-    \tret := sort.Search(r-l+1, func(i int) bool {\n\t\tif isPriorySmall == true {\n\
-    \t\t\tval := w.KthSmall(l, r, l+1)\n\t\t\treturn k <= val\n\t\t} else {\n\t\t\t\
-    val := w.KthSmall(l, r, l+i)\n\t\t\treturn k >= val\n\t\t}\n\t})\n\treturn ret\
-    \ + 1\n}\n\n// [l,r]\u306B\u3066low\u4EE5\u4E0A\u3001high\u4EE5\u4E0B\u306E\u8981\
-    \u7D20\u6570\u3092\u30AB\u30A6\u30F3\u30C8\u3059\u308B\nfunc (w *WaveletMatrix)\
-    \ RangeFreq(l, r, low, high int) int {\n\tif low == high {\n\t\treturn w.Freq(l,\
-    \ r, low)\n\t}\n\treturn w.countLt(l, r, high+1) - w.countLt(l, r, low)\n}\n\n\
-    // [l,r]\u3067v\u672A\u6E80\u306E\u8981\u7D20\u306E\u6570\u3092\u30AB\u30A6\u30F3\
-    \u30C8\u3059\u308B\nfunc (w *WaveletMatrix) countLt(l, r, v int) int {\n\tif v\
-    \ > w.maxElement {\n\t\treturn r - l\n\t}\n\tret := 0\n\tfor i := 0; i < w.bit;\
-    \ i++ {\n\t\tb := (v >> (w.bit - i - 1)) & 1\n\t\tl0 := w.wmd[i].Rank(l, 0)\n\t\
-    \tr0 := w.wmd[i].Rank(r, 0)\n\t\tif b == 1 {\n\t\t\tret += r0\n\t\t\tif l > 0\
-    \ {\n\t\t\t\tret -= w.wmd[i].Rank(l-1, 0)\n\t\t\t}\n\t\t\tl += w.wmd[i].ZeroNum()\
-    \ - l0\n\t\t\tr += w.wmd[i].ZeroNum() - r0\n\t\t} else {\n\t\t\tl = l0 - 1\n\t\
-    \t\tr = r0 - 1\n\t\t}\n\t}\n\treturn ret\n}\n"
+    \u5909\u63DB\n\treturn w.KthSmall(l, r, k)\n}\n\n// Freq [l,r]\u306E\u4E2D\u3067\
+    \u306Ex\u306E\u51FA\u73FE\u56DE\u6570\u3092\u8FD4\u3059\nfunc (w *WaveletMatrix)\
+    \ Freq(l, r, x int) int {\n\tt1 := w.Rank(x, r)\n\tt2 := 0\n\tif l != 0 {\n\t\t\
+    t2 = w.Rank(x, l-1)\n\t}\n\treturn t1 - t2\n}\n\n// ConvertIndexToKth \u6307\u5B9A\
+    \u3057\u305Findex\u306E\u5024\u304C[l,r]\u306E\u4E2D\u3067\u4F55\u756A\u76EE\u304B\
+    \u3092\u8FD4\u3059\nfunc (w *WaveletMatrix) ConvertIndexToKth(l, r, index int,\
+    \ isPriorySmall bool) int {\n\tif index < l || index > r {\n\t\treturn -math.MaxInt32S\n\
+    \t}\n\tk := w.Access(index)\n\tret := sort.Search(r-l+1, func(i int) bool {\n\t\
+    \tif isPriorySmall == true {\n\t\t\tval := w.KthSmall(l, r, l+1)\n\t\t\treturn\
+    \ k <= val\n\t\t} else {\n\t\t\tval := w.KthSmall(l, r, l+i)\n\t\t\treturn k >=\
+    \ val\n\t\t}\n\t})\n\treturn ret + 1\n}\n\n// RangeFreq [l,r]\u306B\u3066low\u4EE5\
+    \u4E0A\u3001high\u4EE5\u4E0B\u306E\u8981\u7D20\u6570\u3092\u30AB\u30A6\u30F3\u30C8\
+    \u3059\u308B\nfunc (w *WaveletMatrix) RangeFreq(l, r, low, high int) int {\n\t\
+    if low == high {\n\t\treturn w.Freq(l, r, low)\n\t}\n\treturn w.countLt(l, r,\
+    \ high+1) - w.countLt(l, r, low)\n}\n\n// [l,r]\u3067v\u672A\u6E80\u306E\u8981\
+    \u7D20\u306E\u6570\u3092\u30AB\u30A6\u30F3\u30C8\u3059\u308B\nfunc (w *WaveletMatrix)\
+    \ countLt(l, r, v int) int {\n\tif v > w.maxElement {\n\t\treturn r - l\n\t}\n\
+    \tret := 0\n\tfor i := 0; i < w.bit; i++ {\n\t\tb := (v >> (w.bit - i - 1)) &\
+    \ 1\n\t\tl0 := w.wmd[i].Rank(l, 0)\n\t\tr0 := w.wmd[i].Rank(r, 0)\n\t\tif b ==\
+    \ 1 {\n\t\t\tret += r0\n\t\t\tif l > 0 {\n\t\t\t\tret -= w.wmd[i].Rank(l-1, 0)\n\
+    \t\t\t}\n\t\t\tl += w.wmd[i].ZeroNum() - l0\n\t\t\tr += w.wmd[i].ZeroNum() - r0\n\
+    \t\t} else {\n\t\t\tl = l0 - 1\n\t\t\tr = r0 - 1\n\t\t}\n\t}\n\treturn ret\n}\n"
   dependsOn:
   - lib/template/main.go
   - lib/waveletmatrix/waveletmatrix_test.go
@@ -150,7 +150,7 @@ data:
   requiredBy:
   - lib/template/main.go
   - lib/waveletmatrix/waveletmatrix_test.go
-  timestamp: '2023-08-06 22:43:10+09:00'
+  timestamp: '2023-08-09 15:23:16+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - lib/waveletmatrix/examples/range_kth_smallest.test.go

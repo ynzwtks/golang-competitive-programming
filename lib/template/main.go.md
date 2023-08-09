@@ -788,7 +788,7 @@ data:
   requiredBy:
   - lib/waveletmatrix/waveletmatrix.go
   - lib/waveletmatrix/waveletmatrix_test.go
-  timestamp: '2023-08-06 22:43:10+09:00'
+  timestamp: '2023-08-09 15:23:16+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - lib/waveletmatrix/examples/range_kth_smallest.test.go
