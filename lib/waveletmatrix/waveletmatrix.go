@@ -246,7 +246,7 @@ func (w *WaveletMatrix) KthLarge(l, r, n int) int {
 	return w.KthSmall(l, r, k)
 }
 
-// [l,r]の中でのxの出現回数を返す
+// Freq [l,r]の中でのxの出現回数を返す
 func (w *WaveletMatrix) Freq(l, r, x int) int {
 	t1 := w.Rank(x, r)
 	t2 := 0
@@ -256,10 +256,10 @@ func (w *WaveletMatrix) Freq(l, r, x int) int {
 	return t1 - t2
 }
 
-// 指定したindexの値が[l,r]の中で何番目かを返す
+// ConvertIndexToKth 指定したindexの値が[l,r]の中で何番目かを返す
 func (w *WaveletMatrix) ConvertIndexToKth(l, r, index int, isPriorySmall bool) int {
 	if index < l || index > r {
-		return -math.MaxInt32
+		return -math.MaxInt32S
 	}
 	k := w.Access(index)
 	ret := sort.Search(r-l+1, func(i int) bool {
@@ -274,7 +274,7 @@ func (w *WaveletMatrix) ConvertIndexToKth(l, r, index int, isPriorySmall bool) i
 	return ret + 1
 }
 
-// [l,r]にてlow以上、high以下の要素数をカウントする
+// RangeFreq [l,r]にてlow以上、high以下の要素数をカウントする
 func (w *WaveletMatrix) RangeFreq(l, r, low, high int) int {
 	if low == high {
 		return w.Freq(l, r, low)
